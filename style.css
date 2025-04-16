@@ -3,3 +3,7 @@ Theme Name: Fictional University
 Author: Alex Demyanov
 Version: 1.1
 */
+
+body {
+    color: orange;
+}

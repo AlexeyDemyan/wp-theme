@@ -56,44 +56,8 @@ while (have_posts()) {
             echo '</ul>';
         }
 
-        // This is important to run the second query
-        // Since we will need the ID of the page to pull the events 
-        // It resets the data back to the DEFAULT URL-BASED QUERY
+        // Gonna leave it here just in case
         wp_reset_postdata();
-
-        $today = date('Ymd');
-        $eventPosts = new WP_Query(array(
-            // posts_pet_page set at -1 will give all posts that meet the conditions
-            'posts_per_page' => 2,
-            'post_type' => 'event',
-            'meta_key' => 'event_date',
-            'orderby' => 'meta_value_num',
-            'order' => 'ASC',
-            'meta_query' => array(
-                array(
-                    'key' => 'event_date',
-                    'compare' => '>=',
-                    'value' => $today,
-                    'type' => 'numeric'
-                ),
-                // here we're filtering for events that have the current program as their related program
-                array(
-                    'key' => 'related_program',
-                    'compare' => 'LIKE',
-                    'value' => '"' . get_the_ID() . '"' // IMP! We're sanitizing the value with quotes to account for issue with serialization
-                )
-            )
-        ));
-
-        if ($eventPosts->have_posts()) {
-            echo '<hr class="section-break">';
-            echo '<h2 class="headline headline--medium">Upcoming ' . get_the_title() . ' Events</h2>';
-            echo '<br>';
-            while ($eventPosts->have_posts()) {
-                $eventPosts->the_post();
-                get_template_part('template-parts/content-event');
-            }
-        }
         ?>
     </div>
 <?php

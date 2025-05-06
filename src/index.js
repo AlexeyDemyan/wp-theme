@@ -11,4 +11,3 @@ const mobileMenu = new MobileMenu()
 const heroSlider = new HeroSlider()
 const googleMap = new GMap();
 const search = new Search();
-search.events();

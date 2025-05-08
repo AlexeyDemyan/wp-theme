@@ -52,24 +52,24 @@ class Search {
     }
 
     getResults() {
-        // universityData.root_url is something we declared in functions.php to make url flexible
-        $.getJSON(universityData.root_url + '/wp-json/wp/v2/pages?search=' + this.searchField.val(), (pages) => {
-            console.log(pages);
-            $.getJSON(universityData.root_url + '/wp-json/wp/v2/posts?search=' + this.searchField.val(), (posts) => {
-                let combinedResults = pages.concat(posts);
-                this.resultsDiv.html(`
+        $.when(
+            $.getJSON(universityData.root_url + '/wp-json/wp/v2/pages?search=' + this.searchField.val()),
+            $.getJSON(universityData.root_url + '/wp-json/wp/v2/posts?search=' + this.searchField.val())
+        ).then((pages, posts) => {
+            let combinedResults = pages[0].concat(posts[0]);
+            this.resultsDiv.html(`
                     <h2 class="search-overlay__section-title">General Information</h2>
                     ${combinedResults.length ?
-                        `<ul class="link-list min-list">
+                    `<ul class="link-list min-list">
                     ${combinedResults.map((result) => {
-                            return `<li><a href="${result.link}">${result.title.rendered}</a></li>`
-                        }).join('')}
+                        return `<li><a href="${result.link}">${result.title.rendered}</a></li>`
+                    }).join('')}
                     </ul>` : "<p>No general information matches the search</p>"}
                     `);
-                this.isSpinnerVisible = false;
-            })
-        }
-        );
+            this.isSpinnerVisible = false;
+        }, () => {
+            this.resultsDiv.html('<p>Unexpected error. Please try again</p>');
+        });
     }
 
     typingLogic() {

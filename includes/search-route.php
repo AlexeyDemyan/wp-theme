@@ -2,24 +2,66 @@
 
 function universitySearchResults($data)
 {
-    $professors = new WP_Query(array(
-        'post_type' => 'professor',
+    $mainQuery = new WP_Query(array(
+        'post_type' => array('post', 'page', 'professor', 'campus', 'program', 'event'),
         // 's' is a reserved argument, stands for SEARCH
         // WP already does some security, but we use sanitizer here for good practice
         's' => sanitize_text_field($data['keyword'])
     ));
 
-    $professorResults = array();
+    $results = array(
+        'generalInfo' => array(),
+        'professors' => array(),
+        'campuses' => array(),
+        'programs' => array(),
+        'events' => array()
+    );
 
-    while ($professors->have_posts()) {
-        $professors->the_post();
-        array_push($professorResults, array(
-            'title' => get_the_title(),
-            'permalink' => get_the_permalink()
-        ));
+    while ($mainQuery->have_posts()) {
+        $mainQuery->the_post();
+
+        if (get_post_type() == 'post' or get_post_type() == 'page') {
+
+            array_push($results['generalInfo'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink()
+            ));
+        }
+
+        if (get_post_type() == 'professor') {
+
+            array_push($results['professors'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink()
+            ));
+        }
+
+        if (get_post_type() == 'program') {
+
+            array_push($results['programs'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink()
+            ));
+        }
+
+        if (get_post_type() == 'campus') {
+
+            array_push($results['campuses'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink()
+            ));
+        }
+
+        if (get_post_type() == 'event') {
+
+            array_push($results['events'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink()
+            ));
+        }
     }
 
-    return $professorResults;
+    return $results;
 };
 
 function university_register_search()

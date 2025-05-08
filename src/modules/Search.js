@@ -62,7 +62,7 @@ class Search {
                     ${combinedResults.length ?
                     `<ul class="link-list min-list">
                     ${combinedResults.map((result) => {
-                        return `<li><a href="${result.link}">${result.title.rendered}</a></li>`
+                        return `<li><a href="${result.link}">${result.title.rendered}</a> ${result.type == 'post' ? `by ${result.authorName}` : ''}</li>`
                     }).join('')}
                     </ul>` : "<p>No general information matches the search</p>"}
                     `);

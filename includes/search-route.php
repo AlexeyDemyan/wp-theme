@@ -1,8 +1,25 @@
 <?php
 
-function universitySearchResults()
+function universitySearchResults($data)
 {
-    return 'Custom Route Created';
+    $professors = new WP_Query(array(
+        'post_type' => 'professor',
+        // 's' is a reserved argument, stands for SEARCH
+        // WP already does some security, but we use sanitizer here for good practice
+        's' => sanitize_text_field($data['keyword'])
+    ));
+
+    $professorResults = array();
+
+    while ($professors->have_posts()) {
+        $professors->the_post();
+        array_push($professorResults, array(
+            'title' => get_the_title(),
+            'permalink' => get_the_permalink()
+        ));
+    }
+
+    return $professorResults;
 };
 
 function university_register_search()
@@ -15,6 +32,7 @@ function university_register_search()
         // a tehcnicallt safer way is this:
         // 'methods' => WP_REST_SERVER::READABLE
         'methods' => 'GET',
+        // WP passes our request to below callback, so we can access it in universitySearchResults
         'callback' => 'universitySearchResults'
     ));
 };

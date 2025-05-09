@@ -30,7 +30,8 @@ function university_post_types()
     // Program Post Type
     register_post_type('program', array(
         'show_in_rest' => true,
-        'supports' => array('title', 'editor'),
+        // Here we're removing 'editor' because we created custom main_body_content field to work around the search
+        'supports' => array('title'),
         'rewrite' => array('slug' => 'programs'),
         'has_archive' => true,
         'public' => true,
@@ -47,7 +48,7 @@ function university_post_types()
     // Professor Post Type
     register_post_type('professor', array(
         'show_in_rest' => true,
-        'supports' => array('title', 'editor'),
+        'supports' => array('title', 'editor', 'thumbnail'),
         'public' => true,
         'labels' => array(
             'name' => 'Professors',
@@ -57,6 +58,23 @@ function university_post_types()
             'singular_name' => 'Professor'
         ),
         'menu_icon' => 'dashicons-businessperson',
+    ));
+
+    // Campus Post Type
+    register_post_type('campus', array(
+        'supports' => array('title', 'editor'),
+        'rewrite' => array('slug' => 'campuses'),
+        'has_archive' => true,
+        'public' => true,
+        'labels' => array(
+            'name' => 'Campuses',
+            'add_new_item' => 'Add New Campus',
+            'edit_item' => 'Edit Campus',
+            'all_items' => 'All Campuses',
+            'singular_name' => 'Campus'
+        ),
+        'menu_icon' => 'dashicons-location',
+        'show_in_rest' => true
     ));
 };
 

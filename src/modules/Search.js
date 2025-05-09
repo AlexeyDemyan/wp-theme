@@ -34,6 +34,10 @@ class Search {
             this.searchField.focus();
         }, 350);
         this.isOverlayOpen = true;
+
+        // This is done as part of non-JS Search fallback functionality
+        // This prevents default behaviour of link elements (<a>) as we have now changed from <span> to <a>
+        return false;
     }
 
     closeOverlay() {

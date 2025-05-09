@@ -44,7 +44,8 @@ function universitySearchResults($data)
 
             array_push($results['programs'], array(
                 'title' => get_the_title(),
-                'permalink' => get_the_permalink()
+                'permalink' => get_the_permalink(),
+                'id' => get_the_ID()
             ));
         }
 
@@ -75,15 +76,32 @@ function universitySearchResults($data)
         }
     }
 
+    $programsMetaQuery = array(
+        'relation' => 'OR'
+    );
+
+    foreach ($results['programs'] as $item) {
+        array_push($programsMetaQuery, array(
+            'key' => 'related_program',
+            'compare' => 'LIKE',
+            // We're surrounding result with quotes here:
+            'value' => '"' . $item['id'] . '"'
+        ));
+    };
+
     $programRelationshipQuery = new WP_Query(array(
         'post_type' => 'professor',
-        'meta_query' => array(
-            array(
-                'key' => 'related_program',
-                'compare' => 'LIKE',
-                'value' => '"59"'
-            )
-        )
+        'meta_query' => $programsMetaQuery
+        // This was the first draft, will leave it in the commit:
+        
+        // 'meta_query' => array(
+        //     array(
+        //         'key' => 'related_program',
+        //         'compare' => 'LIKE',
+        //         // We're surrounding result with quotes here:
+        //         'value' => '"' . $results['programs'][0]['id'] . '"'
+        //     )
+        // )
     ));
 
     while ($programRelationshipQuery->have_posts()) {
@@ -103,7 +121,7 @@ function universitySearchResults($data)
     // However, I did not experience duplicates in my search
     // Although I specifically added some duplicates in WP-Admin
     // Maybe at this point WP takes care of it out-of-the-box
-    $results['professors'] = array_unique($results['professors'], SORT_REGULAR);
+    // $results['professors'] = array_unique($results['professors'], SORT_REGULAR);
 
     return $results;
 };

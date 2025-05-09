@@ -75,6 +75,36 @@ function universitySearchResults($data)
         }
     }
 
+    $programRelationshipQuery = new WP_Query(array(
+        'post_type' => 'professor',
+        'meta_query' => array(
+            array(
+                'key' => 'related_program',
+                'compare' => 'LIKE',
+                'value' => '"59"'
+            )
+        )
+    ));
+
+    while ($programRelationshipQuery->have_posts()) {
+        $programRelationshipQuery->the_post();
+
+        if (get_post_type() == 'professor') {
+            array_push($results['professors'], array(
+                'title' => get_the_title(),
+                'permalink' => get_the_permalink(),
+                // 0 here refers to current post
+                'image' => get_the_post_thumbnail_url(0, 'professorLandscape')
+            ));
+        }
+    }
+
+    // This is a PHP function that's supposed to remove duplicates
+    // However, I did not experience duplicates in my search
+    // Although I specifically added some duplicates in WP-Admin
+    // Maybe at this point WP takes care of it out-of-the-box
+    $results['professors'] = array_unique($results['professors'], SORT_REGULAR);
+
     return $results;
 };
 

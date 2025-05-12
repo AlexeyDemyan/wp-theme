@@ -58,7 +58,8 @@ function university_files()
     // This is done to arrange the links in JS scripts
     // We are essentially creating a variable named universityData with an associative array assigned to it
     wp_localize_script('main-university-js', 'universityData', array(
-        'root_url' => get_site_url()
+        'root_url' => get_site_url(),
+        'nonce' => wp_create_nonce('wp_rest')
     ));
 };
 

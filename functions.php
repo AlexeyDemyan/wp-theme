@@ -119,3 +119,33 @@ function universityMapKey($api)
 };
 
 add_filter('acf/fields/google_map/api', 'universityMapKey');
+
+
+// Redirect subscriber accounts out of Admin and onto Homepage
+
+function redirectSubsToFrontend() {
+    $currentUser = wp_get_current_user();
+
+    // Checking if current user only has one role and that role is Subscriber
+    if(count($currentUser->roles) === 1 AND $currentUser->roles[0] === 'subscriber') {
+        wp_redirect(site_url('/'));
+        exit;
+    }
+};
+
+// Since we're hooking this onto admin_init, event if we write "/wp-admin" in the url bar, it will still re-direct to Front
+add_action('admin_init', 'redirectSubsToFrontend');
+
+// Remove admin top bar from the Frontend of Subscriber
+
+function noSubsAdminBar() {
+    $currentUser = wp_get_current_user();
+
+    // Checking if current user only has one role and that role is Subscriber
+    if(count($currentUser->roles) === 1 AND $currentUser->roles[0] === 'subscriber') {
+        show_admin_bar(false);
+    }
+};
+
+// Since we're hooking this onto admin_init, event if we write "/wp-admin" in the url bar, it will still re-direct to Front
+add_action('wp_loaded', 'noSubsAdminBar');

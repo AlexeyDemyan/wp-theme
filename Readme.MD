@@ -10,6 +10,10 @@ function university_post_types()
 {
     // Event Post Type
     register_post_type('event', array(
+        // Default value is 'post'. We're creating a custom value here, so we can manage permissions in wp-admin
+        // Also the map_meta_cap is necessry so we don't manually bother with permission logic
+        'capability_type' => 'event',
+        'map_meta_cap' => true,
         // important to still explicitly list title and editor
         // in case I am choosing to add support to anything at all
         'supports' => array('title', 'editor', 'excerpt'),
@@ -62,6 +66,11 @@ function university_post_types()
 
     // Campus Post Type
     register_post_type('campus', array(
+        // Default value is 'post'. We're creating a custom value here, so we can manage permissions in wp-admin
+        // Also the map_meta_cap is necessry so we don't manually bother with permission logic
+        'capability_type' => 'campus',
+        'map_meta_cap' => true,
+        // 
         'supports' => array('title', 'editor'),
         'rewrite' => array('slug' => 'campuses'),
         'has_archive' => true,

@@ -123,11 +123,12 @@ add_filter('acf/fields/google_map/api', 'universityMapKey');
 
 // Redirect subscriber accounts out of Admin and onto Homepage
 
-function redirectSubsToFrontend() {
+function redirectSubsToFrontend()
+{
     $currentUser = wp_get_current_user();
 
     // Checking if current user only has one role and that role is Subscriber
-    if(count($currentUser->roles) === 1 AND $currentUser->roles[0] === 'subscriber') {
+    if (count($currentUser->roles) === 1 and $currentUser->roles[0] === 'subscriber') {
         wp_redirect(site_url('/'));
         exit;
     }
@@ -138,14 +139,43 @@ add_action('admin_init', 'redirectSubsToFrontend');
 
 // Remove admin top bar from the Frontend of Subscriber
 
-function noSubsAdminBar() {
+function noSubsAdminBar()
+{
     $currentUser = wp_get_current_user();
 
     // Checking if current user only has one role and that role is Subscriber
-    if(count($currentUser->roles) === 1 AND $currentUser->roles[0] === 'subscriber') {
+    if (count($currentUser->roles) === 1 and $currentUser->roles[0] === 'subscriber') {
         show_admin_bar(false);
     }
 };
 
 // Since we're hooking this onto admin_init, event if we write "/wp-admin" in the url bar, it will still re-direct to Front
 add_action('wp_loaded', 'noSubsAdminBar');
+
+// Customizing Login Screen link to point to our website instead of Wordpress.org
+
+function customHeaderUrl()
+{
+    return esc_url(site_url('/'));
+};
+
+add_filter('login_headerurl', 'customHeaderUrl');
+
+// Customizing login screen CSS. In theory we could just create a separate CSS file to specifically override necessary styles
+
+function customLoginCSS () {
+    wp_enqueue_style('font-awesome', '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
+    wp_enqueue_style('custom-google-fonts', '//fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i|Roboto:100,300,400,400i,700,700i');
+    wp_enqueue_style('university_main_styles', get_theme_file_uri('/build/style-index.css'));
+    wp_enqueue_style('university_extra_styles', get_theme_file_uri('/build/index.css'));
+};
+
+add_action('login_enqueue_scripts', 'customLoginCSS');
+
+// Overriding login title:
+
+function customLoginTitle () {
+    return get_bloginfo('name');
+};
+
+add_filter('login_headertitle', 'customLoginTitle');

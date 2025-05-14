@@ -88,6 +88,10 @@ function university_post_types()
 
    // Note Post Type
     register_post_type('note', array(
+        // Default value is 'post'. We're creating a custom value here, so we can manage permissions in wp-admin
+        // Also the map_meta_cap is necessry so we don't manually bother with permission logic
+        'capability_type' => 'note',
+        'map_meta_cap' => true,
         'show_in_rest' => true,
         'supports' => array('title', 'editor'),
         // Making notes private:

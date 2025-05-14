@@ -164,7 +164,8 @@ add_filter('login_headerurl', 'customHeaderUrl');
 
 // Customizing login screen CSS. In theory we could just create a separate CSS file to specifically override necessary styles
 
-function customLoginCSS () {
+function customLoginCSS()
+{
     wp_enqueue_style('font-awesome', '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
     wp_enqueue_style('custom-google-fonts', '//fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i|Roboto:100,300,400,400i,700,700i');
     wp_enqueue_style('university_main_styles', get_theme_file_uri('/build/style-index.css'));
@@ -175,8 +176,27 @@ add_action('login_enqueue_scripts', 'customLoginCSS');
 
 // Overriding login title:
 
-function customLoginTitle () {
+function customLoginTitle()
+{
     return get_bloginfo('name');
 };
 
 add_filter('login_headertitle', 'customLoginTitle');
+
+// Force note posts to be private. This is a super powerful hook:
+add_filter('wp_insert_post_data', 'makeNotePrivate');
+
+function makeNotePrivate($data)
+{
+    // Sanitizing Note content to make sure that even basic HTML does not go through
+    if($data['post_type'] == 'note') {
+        $data['post_title'] = sanitize_text_field($data['post_title']);
+        $data['post_content'] = sanitize_textarea_field($data['post_content']);
+    }
+
+    // Making sure that when subscribers create Notes, they don't stay in Draft and are immediately visible in Private
+    if ($data['post_type'] == 'note' AND $data['post_status'] != 'trash') {
+        $data['post_status'] = 'private';
+    }
+    return $data;
+};

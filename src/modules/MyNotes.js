@@ -29,7 +29,14 @@ class MyNotes {
             url: universityData.root_url + '/wp-json/wp/v2/note/' + thisNote.data('id'),
             type: 'DELETE',
             // jqeury slideUp is a cool method that removes element with animation
-            success: (response) => { thisNote.slideUp(); console.log('delete worked!'); console.log(response) },
+            success: (response) => {
+                thisNote.slideUp();
+                console.log('delete worked!');
+                console.log(response);
+                if (response.userNoteCount < 5) {
+                    $(".note-limit-message").removeClass("active");
+                }
+            },
             error: (err) => { console.log('Delete request failed'); console.log(err) }
         });
     }
@@ -87,7 +94,11 @@ class MyNotes {
                     `).prependTo("#my-notes").hide().slideDown();
                 console.log('create worked!'); console.log(response)
             },
-            error: (err) => { console.log('Create request failed'); console.log(err) }
+            error: (err) => {
+                console.log('Create request failed');
+                $(".note-limit-message").addClass("active");
+                console.log(err)
+            }
         });
     }
 

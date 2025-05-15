@@ -10,6 +10,13 @@ function university_custom_rest()
             return get_the_author();
         }
     ));
+
+    // We're using these to count current user notes and adjust the error message accordingly
+    register_rest_field('note', 'userNoteCount', array(
+        'get_callback' => function () {
+            return count_user_posts(get_current_user_id(), 'note');
+        }
+    ));
 };
 
 add_action('rest_api_init', 'university_custom_rest');
@@ -184,12 +191,17 @@ function customLoginTitle()
 add_filter('login_headertitle', 'customLoginTitle');
 
 // Force note posts to be private. This is a super powerful hook:
-add_filter('wp_insert_post_data', 'makeNotePrivate');
-
-function makeNotePrivate($data)
+function makeNotePrivate($data, $postarr)
 {
     // Sanitizing Note content to make sure that even basic HTML does not go through
     if($data['post_type'] == 'note') {
+        // Implementing post amount limit per user: checking if current user ID already has more than 4 posts of type 'note'
+        // Also checking if there is no post ID, which means this is a new post:
+        if(count_user_posts(get_current_user_id(), 'note') > 4 AND !$postarr['ID']) {
+            // Lol what :) So this stops further code execution and returns message in responseText
+            die("You have reached your note limit!");
+        }
+
         $data['post_title'] = sanitize_text_field($data['post_title']);
         $data['post_content'] = sanitize_textarea_field($data['post_content']);
     }
@@ -200,3 +212,9 @@ function makeNotePrivate($data)
     }
     return $data;
 };
+
+// 1 here is the priority and 2 is the number of parameters of that function
+// The lower the priority number, the earlier it will run
+// The priority is an issue only if there are multiple functions running on the same hook
+// But here we still need to specify because we need to access the 4th argument
+add_filter('wp_insert_post_data', 'makeNotePrivate', 1, 2);

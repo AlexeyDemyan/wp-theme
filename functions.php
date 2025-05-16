@@ -1,6 +1,7 @@
 <?php
 
 require get_theme_file_path('/includes/search-route.php');
+require get_theme_file_path('/includes/like-route.php');
 
 // Adding a custom API field to post type, where we pull the name of the author of the post
 function university_custom_rest()

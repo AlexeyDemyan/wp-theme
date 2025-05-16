@@ -27,24 +27,30 @@ while (have_posts()) {
 
                     $existLikeStatus = 'no';
 
-                    $existLikeQuery = new WP_Query(array(
-                        'author' => get_current_user_id(),
-                        'post_type' => 'like',
-                        'meta_query' => array(
-                            array(
-                                'key' => 'liked_professor_id',
-                                'compare' => '=',
-                                'value' => get_the_ID()
+                    if (is_user_logged_in()) {
+                        $existLikeQuery = new WP_Query(array(
+                            'author' => get_current_user_id(),
+                            'post_type' => 'like',
+                            'meta_query' => array(
+                                array(
+                                    'key' => 'liked_professor_id',
+                                    'compare' => '=',
+                                    'value' => get_the_ID()
+                                )
                             )
-                        )
-                    ));
+                        ));
 
-                    if($existLikeQuery->found_posts) {
-                        $existLikeStatus = 'yes';
+                        if ($existLikeQuery->found_posts) {
+                            $existLikeStatus = 'yes';
+                        }
                     }
 
+
                     ?>
-                    <span class="like-box" data-exists="<?php echo $existLikeStatus; ?>">
+                    <!-- data-like attribute contains the ID of the relevant like-post from the Query -->
+                    <span class="like-box" data-exists="<?php echo $existLikeStatus; ?>" data-professor="<?php the_ID() ?>" data-like="<?php if (isset($existLikeQuery->posts[0]->ID)) {
+                                                                                                                                            echo $existLikeQuery->posts[0]->ID;
+                                                                                                                                        } ?>">
                         <i class="fa fa-heart-o" aria-hidden="true"></i>
                         <i class="fa fa-heart" aria-hidden="true"></i>
                         <!-- found_posts will give a number of entries found by the query, which is what we need -->
